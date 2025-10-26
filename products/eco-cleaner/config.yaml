@@ -1,0 +1,26 @@
+product:
+  name: "Eco Surface Cleaner"
+  slug: "eco-cleaner"
+  sku: "EC-118"
+  category: "Home Care"
+  subcategory: "Eco Cleaning"
+  description: "Refillable surface cleaner concentrate with citrus enzymes."
+  target_audience: "Families embracing low-waste living"
+  tone: "Bright, friendly, and informative"
+  messaging_pillars:
+    - "One capsule equals 500mL of cleaner"
+    - "pH-balanced for stone, wood, and glass"
+    - "Carbon-neutral shipping in compostable mailers"
+  color_palette:
+    primary: "#FFA62B"
+    secondary: "#F5F5F0"
+    accent: "#3A7D44"
+  typography: "Rounded sans serif with playful alternates"
+  hero_imagery:
+    mood: "Sunlit kitchen counters with greenery"
+    focal_points:
+      - "Glass spray bottle mid-mist"
+      - "Concentrate capsule dissolving"
+  cta_examples:
+    - "Clean Bright. Waste Light."
+    - "Snap, Fill, Shine."

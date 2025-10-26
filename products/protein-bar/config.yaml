@@ -1,0 +1,26 @@
+product:
+  name: "Plant Protein Bar"
+  slug: "protein-bar"
+  sku: "PB-208"
+  category: "Nutrition"
+  subcategory: "On-the-go Snacks"
+  description: "12g protein bar with crunchy quinoa and dark chocolate drizzle."
+  target_audience: "Busy commuters and fitness enthusiasts"
+  tone: "Energetic, bold, and confident"
+  messaging_pillars:
+    - "12g complete plant protein"
+    - "No artificial sweeteners or sugar alcohols"
+    - "Fuel between workouts or meetings"
+  color_palette:
+    primary: "#FF7F50"
+    secondary: "#2F2F2F"
+    accent: "#FFD166"
+  typography: "Condensed sans serif with athletic angles"
+  hero_imagery:
+    mood: "Studio lighting with motion blur streaks"
+    focal_points:
+      - "Bar broken open with visible layers"
+      - "Floating nuts, seeds, and cocoa nibs"
+  cta_examples:
+    - "Crunch, Conquer, Repeat"
+    - "Pocket Power-Up"

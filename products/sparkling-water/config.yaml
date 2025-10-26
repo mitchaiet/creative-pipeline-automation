@@ -1,0 +1,26 @@
+product:
+  name: "Sparkling Water"
+  slug: "sparkling-water"
+  sku: "SW-001"
+  category: "Beverage"
+  subcategory: "Flavored Seltzer"
+  description: "Zero-calorie sparkling water infused with citrus botanicals."
+  target_audience: "Health-focused urban professionals"
+  tone: "Refreshing, optimistic, and modern"
+  messaging_pillars:
+    - "Highlight electrolyte boost without sugar"
+    - "Celebrate sustainable aluminum packaging"
+    - "Promote lunchtime and post-workout occasions"
+  color_palette:
+    primary: "#6EC8F3"
+    secondary: "#F7B733"
+    accent: "#1F3A93"
+  typography: "Geometric sans serif with rounded terminals"
+  hero_imagery:
+    mood: "Bright daylight with water condensation"
+    focal_points:
+      - "Frosted can with citrus slices"
+      - "Rippling water background"
+  cta_examples:
+    - "Raise the Refresh"
+    - "Fizz that Fits Your Flow"

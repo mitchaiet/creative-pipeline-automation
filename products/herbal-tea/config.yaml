@@ -1,0 +1,26 @@
+product:
+  name: "Herbal Tea Concentrate"
+  slug: "herbal-tea"
+  sku: "HT-014"
+  category: "Beverage"
+  subcategory: "Wellness Tea"
+  description: "Loose-leaf adaptogenic tea with chamomile, ashwagandha, and hibiscus."
+  target_audience: "Mindful creatives seeking evening rituals"
+  tone: "Calming, grounded, and restorative"
+  messaging_pillars:
+    - "Supports nightly unwind and digital detox"
+    - "Organic ingredients sourced from small farms"
+    - "Customizable brew strength"
+  color_palette:
+    primary: "#B07F6F"
+    secondary: "#F5E3D7"
+    accent: "#4E342E"
+  typography: "Elegant serif with high contrast strokes"
+  hero_imagery:
+    mood: "Golden hour with candlelight glow"
+    focal_points:
+      - "Steam rising from handcrafted ceramic cup"
+      - "Loose herbs and linen textures"
+  cta_examples:
+    - "Steep into Stillness"
+    - "Pour a Pause"

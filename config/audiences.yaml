@@ -1,0 +1,235 @@
+# Target Audiences Configuration
+# Each audience includes demographics, psychographics, and messaging preferences
+
+audiences:
+  health_conscious_millennials:
+    name: "Health-Conscious Millennials"
+    age_range: "25-40"
+    demographics:
+      - "Urban and suburban professionals"
+      - "Middle to upper-middle income"
+      - "College-educated"
+      - "Active social media users"
+    psychographics:
+      - "Prioritize wellness and self-care"
+      - "Value authenticity and transparency"
+      - "Environmentally conscious"
+      - "Seek work-life balance"
+    lifestyle:
+      - "Fitness and yoga enthusiasts"
+      - "Meal planning and nutrition-focused"
+      - "Busy schedules, on-the-go lifestyle"
+      - "Social dining experiences"
+    messaging_preferences:
+      - "Focus on health benefits and clean ingredients"
+      - "Emphasize sustainability and ethical sourcing"
+      - "Use aspirational but relatable imagery"
+      - "Highlight convenience without compromise"
+    visual_context:
+      - "Gym and fitness studios"
+      - "Modern kitchens and meal prep"
+      - "Outdoor activities (hiking, running)"
+      - "Trendy cafes and restaurants"
+
+  busy_parents:
+    name: "Busy Parents & Families"
+    age_range: "30-50"
+    demographics:
+      - "Parents with children at home"
+      - "Dual-income or single-parent households"
+      - "Suburban and urban areas"
+      - "Middle income bracket"
+    psychographics:
+      - "Time-pressed and efficiency-seeking"
+      - "Value quality and safety for family"
+      - "Budget-conscious but willing to pay for value"
+      - "Concerned with nutrition and wellness"
+    lifestyle:
+      - "School runs and extracurricular activities"
+      - "Meal planning for multiple family members"
+      - "Weekend family activities"
+      - "Grocery shopping and household management"
+    messaging_preferences:
+      - "Emphasize time-saving and convenience"
+      - "Highlight family-friendly benefits"
+      - "Show real-life scenarios and solutions"
+      - "Focus on trust and reliability"
+    visual_context:
+      - "Kitchen and dining room settings"
+      - "Family activities and gatherings"
+      - "School lunch preparation"
+      - "Weekend outings and picnics"
+
+  gen_z_trendsetters:
+    name: "Gen Z Trendsetters"
+    age_range: "18-27"
+    demographics:
+      - "College students and early career"
+      - "Digital natives"
+      - "Urban and college towns"
+      - "Entry-level income"
+    psychographics:
+      - "Highly social and connected"
+      - "Value experiences over possessions"
+      - "Socially and environmentally conscious"
+      - "Seek authenticity and inclusivity"
+    lifestyle:
+      - "Social media content creators"
+      - "Music festivals and events"
+      - "Late-night study sessions"
+      - "Spontaneous adventures"
+    messaging_preferences:
+      - "Bold, eye-catching visuals"
+      - "Social causes and brand values"
+      - "User-generated content style"
+      - "Humor and relatability"
+    visual_context:
+      - "College campuses and dorms"
+      - "Concert venues and festivals"
+      - "Coffee shops and study spaces"
+      - "Urban street scenes"
+
+  active_seniors:
+    name: "Active Seniors & Retirees"
+    age_range: "60+"
+    demographics:
+      - "Empty nesters and retirees"
+      - "Fixed or retirement income"
+      - "Suburban and retirement communities"
+      - "Health-conscious demographic"
+    psychographics:
+      - "Value quality of life and health"
+      - "Appreciate tradition and reliability"
+      - "Seek meaningful activities"
+      - "Growing tech adoption"
+    lifestyle:
+      - "Gardening and outdoor activities"
+      - "Travel and leisure"
+      - "Volunteer work and community involvement"
+      - "Regular exercise and wellness routines"
+    messaging_preferences:
+      - "Clear, straightforward communication"
+      - "Emphasize health and vitality"
+      - "Show active, engaged lifestyle"
+      - "Highlight proven benefits"
+    visual_context:
+      - "Walking trails and parks"
+      - "Home gardens and kitchens"
+      - "Community centers"
+      - "Travel destinations"
+
+  fitness_enthusiasts:
+    name: "Fitness Enthusiasts & Athletes"
+    age_range: "20-45"
+    demographics:
+      - "Regular gym-goers and athletes"
+      - "Middle to upper income"
+      - "Urban and suburban areas"
+      - "Education varies"
+    psychographics:
+      - "Goal-oriented and disciplined"
+      - "Performance and results-focused"
+      - "Health and nutrition savvy"
+      - "Community-oriented (fitness groups)"
+    lifestyle:
+      - "Daily workout routines"
+      - "Meal tracking and macro counting"
+      - "Sports competitions and events"
+      - "Recovery and wellness practices"
+    messaging_preferences:
+      - "Focus on performance benefits"
+      - "Use specific metrics and claims"
+      - "Show intense, motivating imagery"
+      - "Emphasize protein, energy, recovery"
+    visual_context:
+      - "Gyms and fitness studios"
+      - "Running trails and outdoor workouts"
+      - "Post-workout recovery"
+      - "Athletic competitions"
+
+  eco_conscious_consumers:
+    name: "Eco-Conscious & Sustainable Living"
+    age_range: "25-55"
+    demographics:
+      - "Environmentally aware consumers"
+      - "Middle to upper-middle income"
+      - "Urban and progressive communities"
+      - "Well-educated"
+    psychographics:
+      - "Prioritize environmental impact"
+      - "Value ethical and sustainable brands"
+      - "Willing to pay premium for values"
+      - "Seek minimal waste solutions"
+    lifestyle:
+      - "Farmers markets and local shopping"
+      - "Zero-waste practices"
+      - "Outdoor recreation"
+      - "Plant-based eating"
+    messaging_preferences:
+      - "Highlight sustainability credentials"
+      - "Emphasize packaging and sourcing"
+      - "Show environmental impact"
+      - "Use natural, earthy aesthetics"
+    visual_context:
+      - "Farmers markets and co-ops"
+      - "Natural outdoor settings"
+      - "Sustainable home environments"
+      - "Composting and recycling"
+
+  young_professionals:
+    name: "Young Professionals & Urban Dwellers"
+    age_range: "22-35"
+    demographics:
+      - "Career-focused individuals"
+      - "Middle to upper income"
+      - "Major metropolitan areas"
+      - "College or graduate degree"
+    psychographics:
+      - "Ambitious and career-driven"
+      - "Value efficiency and quality"
+      - "Social and networking-oriented"
+      - "Tech-savvy and connected"
+    lifestyle:
+      - "Long work hours and commuting"
+      - "Social happy hours and dining"
+      - "Fitness and wellness routines"
+      - "Travel and experiences"
+    messaging_preferences:
+      - "Emphasize convenience and premium quality"
+      - "Show aspirational urban lifestyle"
+      - "Focus on time-saving benefits"
+      - "Sleek, modern aesthetics"
+    visual_context:
+      - "Office environments"
+      - "Coffee shops and coworking spaces"
+      - "Urban apartments and lofts"
+      - "Rooftop bars and restaurants"
+
+  budget_conscious_shoppers:
+    name: "Budget-Conscious Value Seekers"
+    age_range: "25-60"
+    demographics:
+      - "Cost-conscious consumers"
+      - "Lower to middle income"
+      - "Suburban and rural areas"
+      - "Mixed education levels"
+    psychographics:
+      - "Seek best value for money"
+      - "Compare prices and look for deals"
+      - "Practical and no-nonsense approach"
+      - "Family or household budget managers"
+    lifestyle:
+      - "Coupon clipping and deal hunting"
+      - "Bulk shopping and meal planning"
+      - "DIY and home cooking"
+      - "Practical, everyday activities"
+    messaging_preferences:
+      - "Highlight value and affordability"
+      - "Show practical benefits"
+      - "Emphasize quantity and longevity"
+      - "Use clear, honest communication"
+    visual_context:
+      - "Home kitchens and pantries"
+      - "Grocery stores and shopping"
+      - "Family meal times"
+      - "Everyday household settings"

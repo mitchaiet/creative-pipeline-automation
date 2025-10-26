@@ -1,0 +1,26 @@
+product:
+  name: "Travel Flex Backpack"
+  slug: "travel-backpack"
+  sku: "TB-452"
+  category: "Gear"
+  subcategory: "Travel Accessories"
+  description: "35L carry-on backpack with modular cubes and RFID pockets."
+  target_audience: "Digital nomads and weekend explorers"
+  tone: "Adventurous, practical, and reassuring"
+  messaging_pillars:
+    - "Fits international carry-on requirements"
+    - "Quick-access laptop sleeve with drop protection"
+    - "Weatherproof recycled nylon shell"
+  color_palette:
+    primary: "#1E2A32"
+    secondary: "#8DA9C4"
+    accent: "#F4D35E"
+  typography: "Utility sans serif with technical numerals"
+  hero_imagery:
+    mood: "Golden-hour city rooftop or transit station"
+    focal_points:
+      - "Bag open showing modular cubes"
+      - "Traveler in motion with blurred background"
+  cta_examples:
+    - "Pack Light. Live Wide."
+    - "Rearrange the Journey"

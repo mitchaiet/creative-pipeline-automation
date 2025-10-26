@@ -1,0 +1,165 @@
+# Target Regions and Markets Configuration
+# Each region includes cultural context, trends, and preferences for campaign localization
+
+regions:
+  north_america:
+    name: "North America"
+    description: "United States and Canada"
+    top_languages:
+      - code: "en"
+        name: "English"
+      - code: "es"
+        name: "Spanish"
+      - code: "fr"
+        name: "French"
+      - code: "zh-CN"
+        name: "Chinese (Simplified)"
+    cultural_context:
+      - "Direct, benefit-focused messaging"
+      - "Value innovation and convenience"
+      - "Health and wellness trends strong"
+      - "Sustainability increasingly important"
+    visual_preferences:
+      - "Bold, bright colors"
+      - "Modern, minimalist design"
+      - "Authentic, relatable imagery"
+    seasonal_considerations:
+      - "Summer: outdoor activities, beach scenes"
+      - "Fall: cozy, warm tones"
+      - "Winter: holiday themes, indoor comfort"
+      - "Spring: renewal, fresh starts"
+
+  europe:
+    name: "Europe"
+    description: "Western and Central Europe"
+    top_languages:
+      - code: "en"
+        name: "English"
+      - code: "de"
+        name: "German"
+      - code: "fr"
+        name: "French"
+      - code: "es"
+        name: "Spanish"
+    cultural_context:
+      - "Emphasis on heritage and tradition"
+      - "Strong environmental consciousness"
+      - "Quality over quantity mindset"
+      - "Sophisticated, elegant aesthetics"
+    visual_preferences:
+      - "Muted, natural color palettes"
+      - "Classic, timeless design"
+      - "Lifestyle and context-rich imagery"
+    seasonal_considerations:
+      - "Summer: Mediterranean lifestyle, outdoor cafes"
+      - "Fall: harvest themes, countryside"
+      - "Winter: alpine settings, cozy interiors"
+      - "Spring: gardens, city parks"
+
+  asia_pacific:
+    name: "Asia Pacific"
+    description: "East and Southeast Asia, Australia, New Zealand"
+    top_languages:
+      - code: "zh-CN"
+        name: "Chinese (Simplified)"
+      - code: "ja"
+        name: "Japanese"
+      - code: "ko"
+        name: "Korean"
+      - code: "en"
+        name: "English"
+    cultural_context:
+      - "Blend of tradition and cutting-edge innovation"
+      - "Community and family-oriented values"
+      - "Beauty and skincare highly valued"
+      - "Tech-savvy and trend-conscious"
+    visual_preferences:
+      - "Vibrant colors with cultural significance"
+      - "Clean, organized compositions"
+      - "Group settings and social contexts"
+    seasonal_considerations:
+      - "Lunar New Year themes"
+      - "Cherry blossom season (spring)"
+      - "Monsoon/rainy season considerations"
+      - "Festival-based campaigns"
+
+  latin_america:
+    name: "Latin America"
+    description: "Mexico, Central and South America"
+    top_languages:
+      - code: "es"
+        name: "Spanish"
+      - code: "pt"
+        name: "Portuguese"
+      - code: "en"
+        name: "English"
+      - code: "fr"
+        name: "French"
+    cultural_context:
+      - "Warm, family-centered culture"
+      - "Vibrant, energetic lifestyle"
+      - "Strong tradition of celebration"
+      - "Growing middle class and urbanization"
+    visual_preferences:
+      - "Bold, saturated colors"
+      - "Festive, lively imagery"
+      - "Family and community scenes"
+    seasonal_considerations:
+      - "Carnival and festival seasons"
+      - "Summer: beach and outdoor gatherings"
+      - "Religious holidays prominent"
+      - "Tropical climate considerations"
+
+  middle_east_africa:
+    name: "Middle East & Africa"
+    description: "Middle East and North Africa, Sub-Saharan Africa"
+    top_languages:
+      - code: "ar"
+        name: "Arabic"
+      - code: "fr"
+        name: "French"
+      - code: "en"
+        name: "English"
+      - code: "sw"
+        name: "Swahili"
+    cultural_context:
+      - "Respect for tradition and modernity"
+      - "Luxury and premium positioning valued"
+      - "Family and hospitality central"
+      - "Growing youth population"
+    visual_preferences:
+      - "Rich, luxurious aesthetics"
+      - "Gold and jewel tones"
+      - "Elegant, premium presentation"
+    seasonal_considerations:
+      - "Ramadan and Eid celebrations"
+      - "Summer: extreme heat considerations"
+      - "Indoor lifestyle preferences"
+      - "Premium gift-giving occasions"
+
+  oceania:
+    name: "Oceania"
+    description: "Australia, New Zealand, Pacific Islands"
+    top_languages:
+      - code: "en"
+        name: "English"
+      - code: "zh-CN"
+        name: "Chinese (Simplified)"
+      - code: "mi"
+        name: "Maori"
+      - code: "fr"
+        name: "French"
+    cultural_context:
+      - "Outdoor, active lifestyle"
+      - "Laid-back, friendly approach"
+      - "Strong environmental awareness"
+      - "Beach and ocean culture"
+    visual_preferences:
+      - "Natural, sun-drenched imagery"
+      - "Coastal and outdoor settings"
+      - "Authentic, unpretentious style"
+    seasonal_considerations:
+      - "Reverse seasons from Northern Hemisphere"
+      - "Summer: beach lifestyle, BBQs"
+      - "Winter: milder, still outdoor-friendly"
+      - "Strong sporting culture year-round"

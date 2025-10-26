@@ -1,0 +1,26 @@
+product:
+  name: "Gourmet Coffee Beans"
+  slug: "gourmet-coffee"
+  sku: "GC-605"
+  category: "Beverage"
+  subcategory: "Specialty Coffee"
+  description: "Single-origin medium roast with tasting notes of cacao and plum."
+  target_audience: "Home baristas and boutique cafés"
+  tone: "Artisanal, sensory, and story-driven"
+  messaging_pillars:
+    - "Direct trade relationships with micro-lot farms"
+    - "Altitude and roast profile printed on every bag"
+    - "Subscription with rotating seasonal drops"
+  color_palette:
+    primary: "#4A2C2A"
+    secondary: "#D9C3A4"
+    accent: "#F2A65A"
+  typography: "Vintage-inspired serif with script accents"
+  hero_imagery:
+    mood: "Moody morning light with steam"
+    focal_points:
+      - "Barista pouring latte art"
+      - "Beans tumbling mid-air"
+  cta_examples:
+    - "Brew the Story"
+    - "Pour Over the Details"

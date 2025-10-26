@@ -1,0 +1,26 @@
+product:
+  name: "Hybrid Smart Watch"
+  slug: "smart-watch"
+  sku: "HW-512"
+  category: "Wearables"
+  subcategory: "Lifestyle Tech"
+  description: "Analog-inspired smartwatch with sleep tracking and week-long battery."
+  target_audience: "Design-forward professionals"
+  tone: "Sophisticated, precise, and encouraging"
+  messaging_pillars:
+    - "Blend of analog craftsmanship and smart notifications"
+    - "7-day battery with solar assist"
+    - "Auto-context wellness insights"
+  color_palette:
+    primary: "#0C1F33"
+    secondary: "#D3CDC3"
+    accent: "#E3A857"
+  typography: "Modern neo-grotesque with generous tracking"
+  hero_imagery:
+    mood: "Low-key luxury with directional soft light"
+    focal_points:
+      - "Watch face hero with ambient blur"
+      - "Macro detail of crown and strap texture"
+  cta_examples:
+    - "Sync with Substance"
+    - "Time, Tethered to You"

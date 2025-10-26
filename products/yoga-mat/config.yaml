@@ -1,0 +1,26 @@
+product:
+  name: "Cork Yoga Mat"
+  slug: "yoga-mat"
+  sku: "YM-091"
+  category: "Wellness"
+  subcategory: "Fitness Accessories"
+  description: "Antimicrobial cork mat with recycled rubber base."
+  target_audience: "Eco-conscious yogis and pilates studios"
+  tone: "Grounded, empowering, and tactile"
+  messaging_pillars:
+    - "Natural cork provides superior grip when damp"
+    - "Tree planted for every mat sold"
+    - "Alignment markers etched into surface"
+  color_palette:
+    primary: "#9C7B55"
+    secondary: "#F3E0C4"
+    accent: "#3E6B48"
+  typography: "Humanist sans serif with organic curves"
+  hero_imagery:
+    mood: "Morning studio light with plants"
+    focal_points:
+      - "Rolled mat revealing dual textures"
+      - "Hands in plank pose highlighting grip"
+  cta_examples:
+    - "Feel the Earth, Hold the Flow"
+    - "Root Down, Rise Up"

@@ -1,0 +1,26 @@
+product:
+  name: "Nimbus ANC Headphones"
+  slug: "noise-cancelling-headphones"
+  sku: "ANC-740"
+  category: "Audio"
+  subcategory: "Premium Headphones"
+  description: "Adaptive noise-cancelling headphones with spatial audio."
+  target_audience: "Remote workers and frequent travelers"
+  tone: "Minimal, premium, and quietly confident"
+  messaging_pillars:
+    - "Real-time scene awareness adjusts isolation"
+    - "Studio-grade drivers tuned by mastering engineers"
+    - "35-hour battery with quick charge"
+  color_palette:
+    primary: "#1C1C1C"
+    secondary: "#8C8C8C"
+    accent: "#5EF0FF"
+  typography: "Clean grotesque with tight kerning"
+  hero_imagery:
+    mood: "Ultra-low key lighting with cyan edge glow"
+    focal_points:
+      - "Floating earcups with soft shadows"
+      - "Macro shot of knit headband"
+  cta_examples:
+    - "Silence, Shaped for You"
+    - "Hear Less. Feel More."

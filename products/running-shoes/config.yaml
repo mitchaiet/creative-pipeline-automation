@@ -1,0 +1,26 @@
+product:
+  name: "Velocity Running Shoes"
+  slug: "running-shoes"
+  sku: "RS-330"
+  category: "Footwear"
+  subcategory: "Performance Running"
+  description: "Carbon-plated trainer with adaptive foam midsole."
+  target_audience: "Half-marathon and marathon runners"
+  tone: "Dynamic, data-driven, and inspirational"
+  messaging_pillars:
+    - "Carbon plate tuned for midfoot strikers"
+    - "4mm drop for natural cadence"
+    - "Digital twin in companion app for wear tracking"
+  color_palette:
+    primary: "#1B1F3B"
+    secondary: "#F21B3F"
+    accent: "#32E0C4"
+  typography: "Techno sans serif with squared edges"
+  hero_imagery:
+    mood: "Night city lights with motion trails"
+    focal_points:
+      - "Shoe suspended mid-stride"
+      - "Close-up of outsole grip pattern"
+  cta_examples:
+    - "Chase the Split"
+    - "Lightweight. Full Send."

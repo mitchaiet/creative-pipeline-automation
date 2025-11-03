@@ -473,14 +473,6 @@ graph TB
 
 ---
 
-## Usage Notes
-
-These diagrams can be rendered in any Mermaid-compatible viewer:
-- GitHub (renders automatically in .md files)
-- Mermaid Live Editor (https://mermaid.live)
-- VS Code (with Mermaid extension)
-- Notion, Confluence, etc.
-
 Each diagram visualizes a different aspect of the campaign monitoring system:
 1. **Sequence Diagram** - Temporal flow of automated workflow
 2. **Data Structure** - Hierarchical organization of campaign data

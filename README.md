@@ -15,7 +15,14 @@ Generate professional, localized advertising creatives with multi-product suppor
 git clone https://github.com/mitchaiet/creative-pipeline-automation.git
 cd creative-pipeline-automation
 
-# Install using uv (recommended)
+# Install uv (if not already installed)
+# On macOS and Linux:
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# On Windows:
+# powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Install project dependencies using uv (recommended)
 uv sync
 
 # Or using pip

@@ -8,6 +8,8 @@ Generate professional, localized advertising creatives with multi-product suppor
 
 ### 1. Install Dependencies
 
+**Requirements**: Python 3.12 or 3.13 (3.14+ not yet supported)
+
 ```bash
 # Clone the repository
 git clone https://github.com/mitchaiet/creative-pipeline-automation.git

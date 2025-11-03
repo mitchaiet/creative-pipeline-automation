@@ -1,8 +1,8 @@
 [project]
 name = "creative-automation-pipeline"
 version = "0.1.0"
-description = "Add your description here"
-requires-python = ">=3.12"
+description = "AI-powered creative asset generation for social ad campaigns"
+requires-python = ">=3.12,<3.14"
 dependencies = [
     "deep-translator>=1.11.4",
     "google-genai>=1.46.0",

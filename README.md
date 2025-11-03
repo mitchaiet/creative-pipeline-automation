@@ -57,20 +57,32 @@ Open your browser to **http://localhost:7860**
 
 ## Basic Usage
 
-### Create a Campaign
+### Option 1: Create New Campaign
 
 1. **Campaign Tab**: Select your target region and audience
-2. **Messaging Tab**: Enter your campaign message
-3. **Environments Tab**: Generate background scenes
+2. **Messaging Tab**: Enter your campaign message and get translations
+3. **Environments Tab**: Describe and generate background scenes
 4. **Products Tab**: Choose products and generate views
-5. **Generate Tab**: Create final ads in 3 aspect ratios
+5. **Logos Tab**: Upload brand logos
+6. **Preview Tab**: Review all assets
+7. **Generate Tab**: Create final ads in 3 aspect ratios
+
+### Option 2: Load from JSON
+
+1. **Campaign Tab**: Click "Load Campaign JSON" and select a `campaign_config.json` file
+2. **Automatic workflow triggers:**
+   - Translations generated for target region
+   - 4 environment backgrounds created
+   - Product views generated (6 per product)
+3. **Preview Tab**: Review auto-generated assets
+4. **Generate Tab**: Create final ads
 
 ### Output
 
-All assets are saved to `outputs/{CAMPAIGN_ID}/`:
-- `environments/` - Background images
-- `products/` - Product photography
-- `ads/1_1/` - Square ads (Instagram, Facebook)
-- `ads/9_16/` - Vertical ads (Stories, Reels, TikTok)
-- `ads/16_9/` - Landscape ads (YouTube)
-- `campaign_config.json` - Full campaign configuration
+All campaigns are organized by timestamp in `outputs/YYYYMMDD_HHMMSS/`:
+- `environments/` - 4 AI-generated background scenes
+- `products/` - 6 views per product (front, back, left, right, top-down, bottom-up)
+- `ads/1_1/` - Square ads (1080×1080 for Instagram, Facebook)
+- `ads/9_16/` - Vertical ads (1080×1920 for Stories, Reels, TikTok)
+- `ads/16_9/` - Landscape ads (1920×1080 for YouTube)
+- `campaign_config.json` - Complete campaign configuration with portable paths

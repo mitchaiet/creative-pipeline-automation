@@ -49,10 +49,8 @@ REGION_COUNTRIES = {
 
 
 def generate_campaign_id() -> str:
-    """Generate a unique 6-digit alphanumeric campaign ID."""
-    # Use uppercase letters and digits, excluding similar-looking characters (0, O, I, 1)
-    chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
-    return ''.join(random.choices(chars, k=6))
+    """Generate a unique campaign ID based on timestamp."""
+    return datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
 def load_regions_config() -> dict:
@@ -728,7 +726,7 @@ Variation {i + 1}: Add subtle variation in camera angle or lighting while mainta
         return f"❌ Error during generation: {str(e)}", generated_images
 
 
-def generate_ad_compositions(selected_envs: List[str], selected_products: List[str], campaign_msg: str, selected_logos: List[str], include_logo_1_1: bool, include_logo_9_16: bool, include_logo_16_9: bool, region_key: str, audience_key: str, localize_1_1: bool, localize_9_16: bool, localize_16_9: bool, campaign_id: str, progress=gr.Progress()) -> Tuple[str, List[str], List[str], List[str], str]:
+def generate_ad_compositions(selected_envs: List[str], selected_products: List[str], campaign_msg: str, selected_logos: List[str], include_logo_1_1: bool, include_logo_9_16: bool, include_logo_16_9: bool, region_key: str, audience_key: str, localize_1_1: bool, localize_9_16: bool, localize_16_9: bool, campaign_id: str, environment_prompt: str, product_slugs: List[str], generation_mode: str, progress=gr.Progress()) -> Tuple[str, List[str], List[str], List[str], str]:
     """Generate final ad compositions in multiple aspect ratios using AI.
 
     If localization is enabled for a format, generates versions in all regional languages.
@@ -819,6 +817,24 @@ def generate_ad_compositions(selected_envs: List[str], selected_products: List[s
             }
         }
 
+        # Convert logo paths to relative paths from project root
+        relative_logo_paths = []
+        if selected_logos:
+            for logo in selected_logos:
+                logo_path = Path(logo)
+                try:
+                    # Try to make path relative to project root
+                    relative_path = str(logo_path.relative_to(Path.cwd()))
+                    relative_logo_paths.append(relative_path)
+                except ValueError:
+                    # Path is outside project directory (e.g., temp upload)
+                    # Skip temp paths - they won't exist after session ends
+                    if '/tmp/' in str(logo_path) or '/T/' in str(logo_path) or 'temp' in str(logo_path).lower():
+                        print(f"⚠️ Skipping temporary logo path: {logo_path}")
+                        continue
+                    # If it's a real external path, use as-is
+                    relative_logo_paths.append(str(logo_path))
+
         # Build comprehensive campaign configuration
         campaign_config = {
             "campaign": {
@@ -832,7 +848,12 @@ def generate_ad_compositions(selected_envs: List[str], selected_products: List[s
                 "region": region_key if region_key else None,
                 "audience": audience_key if audience_key else None
             },
-            "region": region_key if region_key else None,  # Keep for backwards compatibility
+            "generation_config": {
+                "environment_prompt": environment_prompt,
+                "product_slugs": product_slugs if product_slugs else [],
+                "product_mode": generation_mode,
+                "logo_paths": relative_logo_paths
+            },
             "messaging": {
                 "primary_message": campaign_msg,
                 "localizations_enabled": {
@@ -841,41 +862,39 @@ def generate_ad_compositions(selected_envs: List[str], selected_products: List[s
                     "16:9": localize_16_9
                 }
             },
-            "assets": {
-                "environments": selected_envs,
-                "products": selected_products,
-                "logos": selected_logos if selected_logos else []
-            },
-            "generation_settings": {
-                "aspect_ratios": {
-                    "1:1": {
-                        "enabled": True,
-                        "include_logo": include_logo_1_1,
-                        "localize": localize_1_1
-                    },
-                    "9:16": {
-                        "enabled": True,
-                        "include_logo": include_logo_9_16,
-                        "localize": localize_9_16
-                    },
-                    "16:9": {
-                        "enabled": True,
-                        "include_logo": include_logo_16_9,
-                        "localize": localize_16_9
+            "ad_settings": {
+                "aspect_ratios": ["1:1", "9:16", "16:9"],
+                "localization": {
+                    "enabled": localize_1_1 or localize_9_16 or localize_16_9,
+                    "per_format": {
+                        "1:1": localize_1_1,
+                        "9:16": localize_9_16,
+                        "16:9": localize_16_9
                     }
+                },
+                "include_logo": {
+                    "1:1": include_logo_1_1,
+                    "9:16": include_logo_9_16,
+                    "16:9": include_logo_16_9
                 }
             }
         }
 
         # Always fetch translations for documentation (if region is selected)
-        translations = []
+        translations_list = []
         if region_key and campaign_msg:
             progress(0.05, desc="Getting translations...")
-            translations = get_message_translations(campaign_msg, region_key)
+            translations_list = get_message_translations(campaign_msg, region_key)
 
-        # Add translations to campaign config (always include for documentation)
-        if translations:
-            campaign_config["messaging"]["translations"] = translations
+        # Convert translations list to dictionary with language codes as keys
+        if translations_list:
+            translations_dict = {}
+            for trans in translations_list:
+                lang_code = trans.get('code')
+                text = trans.get('text')
+                if lang_code and text:
+                    translations_dict[lang_code] = text
+            campaign_config["messaging"]["translations"] = translations_dict
 
         # Save campaign configuration to JSON
         config_file = campaign_dir / "campaign_config.json"
@@ -886,7 +905,7 @@ def generate_ad_compositions(selected_envs: List[str], selected_products: List[s
         if localize_1_1 or localize_9_16 or localize_16_9:
             if not region_key:
                 return "⚠️ Please select a region in Campaign tab to use localization feature.", [], [], [], json.dumps(campaign_config, indent=2, ensure_ascii=False)
-            if not translations:
+            if not translations_list:
                 return "⚠️ Could not get translations. Please select a region in Campaign tab or disable localization.", [], [], [], json.dumps(campaign_config, indent=2, ensure_ascii=False)
 
         outputs = {
@@ -897,8 +916,8 @@ def generate_ad_compositions(selected_envs: List[str], selected_products: List[s
 
         total_generations = 0
         for config in aspect_ratios.values():
-            if config['localize'] and translations:
-                total_generations += len(translations)
+            if config['localize'] and translations_list:
+                total_generations += len(translations_list)
             else:
                 total_generations += 1
 
@@ -910,9 +929,9 @@ def generate_ad_compositions(selected_envs: List[str], selected_products: List[s
 
             # Determine messages to generate
             messages_to_generate = []
-            if config['localize'] and translations:
+            if config['localize'] and translations_list:
                 # Generate for all translations
-                for trans in translations:
+                for trans in translations_list:
                     messages_to_generate.append({
                         'text': trans['text'],
                         'language': trans['language'],
@@ -1180,6 +1199,99 @@ def load_campaign_from_json(json_path: str) -> tuple:
 
     except Exception as e:
         return None, None, "", f"❌ Error loading JSON: {str(e)}", [], []
+
+
+def load_campaign_config_from_json(json_path: str) -> tuple:
+    """Load campaign configuration from JSON and populate UI fields.
+
+    This function:
+    1. Loads campaign configuration from JSON
+    2. Generates a new campaign ID for the session
+    3. Extracts all settings and populates UI
+    4. Does NOT auto-generate assets - user clicks buttons to generate
+
+    Returns:
+        Tuple of (region_key, audience_key, message, environment_prompt, product_slugs,
+                 generation_mode, logos, localization_settings, logo_settings,
+                 new_campaign_id, status_message)
+    """
+    if not json_path:
+        return None, None, "", "", [], "separate", [], [False, False, False], [False, False, False], "", "No file selected"
+
+    try:
+        # Load JSON configuration
+        with open(json_path, 'r') as f:
+            config = json.load(f)
+
+        # Extract targeting
+        targeting = config.get("targeting", {})
+        region_key = targeting.get("region")
+        audience_key = targeting.get("audience")
+
+        # Extract messaging
+        messaging = config.get("messaging", {})
+        message = messaging.get("primary_message", "")
+
+        # Extract generation config
+        gen_config = config.get("generation_config", {})
+        environment_prompt = gen_config.get("environment_prompt", "")
+        product_slugs = gen_config.get("product_slugs", [])
+        generation_mode = gen_config.get("product_mode", "separate")
+        logo_paths = gen_config.get("logo_paths", [])
+
+        # Extract ad settings
+        ad_settings = config.get("ad_settings", {})
+        localization = ad_settings.get("localization", {})
+        localization_per_format = localization.get("per_format", {})
+        localize_1_1 = localization_per_format.get("1:1", False)
+        localize_9_16 = localization_per_format.get("9:16", False)
+        localize_16_9 = localization_per_format.get("16:9", False)
+
+        include_logo_settings = ad_settings.get("include_logo", {})
+        include_logo_1_1 = include_logo_settings.get("1:1", False)
+        include_logo_9_16 = include_logo_settings.get("9:16", False)
+        include_logo_16_9 = include_logo_settings.get("16:9", False)
+
+        # Generate new campaign ID for this session
+        new_campaign_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # Convert relative logo paths to absolute paths
+        absolute_logo_paths = []
+        for logo_path in logo_paths:
+            abs_path = Path(logo_path)
+            if not abs_path.is_absolute():
+                abs_path = Path.cwd() / logo_path
+            if abs_path.exists():
+                absolute_logo_paths.append(str(abs_path))
+
+        # Build status message
+        status = f"✅ Loaded campaign configuration (New ID: **{new_campaign_id}**)\n\n"
+        status += f"**Campaign Settings:**\n"
+        status += f"- Region: {region_key or 'Not specified'}\n"
+        status += f"- Audience: {audience_key or 'Not specified'}\n"
+        status += f"- Message: {len(message)} characters\n\n"
+        status += f"**Generation Config:**\n"
+        status += f"- Environment prompt: {'✓ Loaded' if environment_prompt else '✗ Not set'}\n"
+        status += f"- Products: {', '.join(product_slugs) if product_slugs else 'None'}\n"
+        status += f"- Product mode: {generation_mode}\n"
+        status += f"- Logos: {len(absolute_logo_paths)} loaded\n\n"
+        status += f"**Next Steps:**\n"
+        status += f"1. Go to **Environments** tab and click 'Generate Environments'\n"
+        status += f"2. Go to **Products** tab and click 'Generate Product Views'\n"
+        status += f"3. Go to **Logos** tab to review logos\n"
+        status += f"4. Go to **Preview** tab to review all assets\n"
+        status += f"5. Go to **Generate** tab to create final ads"
+
+        return (region_key, audience_key, message, environment_prompt, product_slugs,
+                generation_mode, absolute_logo_paths,
+                [localize_1_1, localize_9_16, localize_16_9],
+                [include_logo_1_1, include_logo_9_16, include_logo_16_9],
+                new_campaign_id, status)
+
+    except Exception as e:
+        return (None, None, "", "", [], "separate", [],
+                [False, False, False], [False, False, False], "",
+                f"❌ Error loading campaign configuration: {str(e)}")
 
 
 def export_campaign_config(region_key: str, audience_key: str, message: str, selected_envs: List[str], selected_products: List[str]) -> str:
@@ -2135,7 +2247,7 @@ def create_interface():
                 # Connect generation button
                 generate_ads_btn.click(
                     fn=generate_ad_compositions,
-                    inputs=[selected_env_state, selected_product_state, campaign_message, selected_logo_state, include_logo_1_1, include_logo_9_16, include_logo_16_9, region_dropdown, audience_dropdown, generate_localizations_1_1, generate_localizations_9_16, generate_localizations_16_9, campaign_id_state],
+                    inputs=[selected_env_state, selected_product_state, campaign_message, selected_logo_state, include_logo_1_1, include_logo_9_16, include_logo_16_9, region_dropdown, audience_dropdown, generate_localizations_1_1, generate_localizations_9_16, generate_localizations_16_9, campaign_id_state, environment_prompt, product_dropdown, generation_mode],
                     outputs=[generation_status_ads, preview_1_1, preview_9_16, preview_16_9, campaign_json_display]
                 )
 
@@ -2204,37 +2316,66 @@ def create_interface():
         next_to_settings.click(fn=lambda: gr.update(selected="settings"), inputs=None, outputs=tabs)
         prev_to_generate.click(fn=lambda: gr.update(selected="generate"), inputs=None, outputs=tabs)
 
-        # Wire up Load JSON handler with auto-preview
+        # Wire up Load JSON handler to populate UI fields and trigger auto-generation
         def load_and_preview(json_path):
-            """Load campaign JSON, populate fields, and switch to preview tab."""
-            # Load the JSON
-            region_key, audience_key, message, status, environments, products = load_campaign_from_json(json_path)
+            """Load campaign JSON, populate UI, and schedule auto-generation in background."""
+            if not json_path:
+                return tuple([None] * 26)  # Return empty values for all outputs
 
-            # Call refresh_preview to get preview outputs
+            # Load configuration from JSON
+            (region_key, audience_key, message, environment_prompt_val, product_slugs_val,
+             generation_mode_val, logos, localization_settings,
+             logo_settings, new_campaign_id, status) = load_campaign_config_from_json(json_path)
+
+            # Call refresh_preview with empty assets initially
             preview_outputs = refresh_preview(
                 region_key,
                 audience_key,
                 message,
-                "",  # translations (will be empty initially)
-                environments,
-                products,
-                []  # logos
+                "",  # translations will be generated in background
+                [],  # environments will be generated in background
+                [],  # products will be generated in background
+                logos
             )
 
             # Build generate preview
             generate_preview = build_generate_preview(region_key, audience_key, message)
 
-            # Return all outputs including tab switch
+            # Build status message with instructions
+            final_status = f"✅ Loaded campaign configuration (ID: **{new_campaign_id}**)\n\n"
+            final_status += f"**Configuration Loaded:**\n"
+            final_status += f"- Region: {region_key or 'Not specified'}\n"
+            final_status += f"- Audience: {audience_key or 'Not specified'}\n"
+            final_status += f"- Environment prompt: {'✓ Loaded' if environment_prompt_val else '✗ Not set'}\n"
+            final_status += f"- Products: {', '.join(product_slugs_val) if product_slugs_val else 'None'}\n"
+            final_status += f"- Logos: {len(logos)} loaded\n\n"
+            final_status += f"**Auto-generating assets...**\n"
+            final_status += f"1. Go to **Messaging** tab and click 'Get Translations'\n"
+            final_status += f"2. Go to **Environments** tab and click 'Generate Environments'\n"
+            final_status += f"3. Go to **Products** tab and click 'Generate Product Views'\n"
+            final_status += f"4. Review all assets in **Preview** tab\n"
+            final_status += f"5. Create final ads in **Generate** tab"
+
+            # Return all outputs including populated UI fields
             return (
                 region_key,           # region_dropdown
                 audience_key,         # audience_dropdown
                 message,              # campaign_message
-                status,               # load_status
-                environments,         # selected_env_state
-                products,             # selected_product_state
-                gr.update(selected="preview"),  # tabs (switch to preview)
+                final_status,         # load_status
+                new_campaign_id,      # campaign_id_state
+                environment_prompt_val,  # environment_prompt
+                product_slugs_val,    # product_dropdown
+                generation_mode_val,  # generation_mode
+                logos,                # selected_logo_state
+                localization_settings[0],  # generate_localizations_1_1
+                localization_settings[1],  # generate_localizations_9_16
+                localization_settings[2],  # generate_localizations_16_9
+                logo_settings[0],     # include_logo_1_1
+                logo_settings[1],     # include_logo_9_16
+                logo_settings[2],     # include_logo_16_9
+                gr.update(selected="messaging"),  # tabs (go to messaging tab to start workflow)
                 generate_preview,     # generate_campaign_preview
-                *preview_outputs      # all preview outputs
+                *preview_outputs      # all preview outputs (empty assets for now)
             )
 
         load_json_file.change(
@@ -2245,9 +2386,18 @@ def create_interface():
                 audience_dropdown,
                 campaign_message,
                 load_status,
-                selected_env_state,
-                selected_product_state,
-                tabs,  # Switch to preview tab
+                campaign_id_state,
+                environment_prompt,
+                product_dropdown,
+                generation_mode,
+                selected_logo_state,
+                generate_localizations_1_1,
+                generate_localizations_9_16,
+                generate_localizations_16_9,
+                include_logo_1_1,
+                include_logo_9_16,
+                include_logo_16_9,
+                tabs,  # Stay on campaign tab
                 generate_campaign_preview,  # Update generate tab preview
                 preview_campaign_summary,
                 preview_message,
@@ -2259,6 +2409,22 @@ def create_interface():
                 preview_logo_gallery,
                 preview_logo_count
             ]
+        ).then(
+            fn=translate_message,
+            inputs=[campaign_message, region_dropdown],
+            outputs=[translations_output]
+        ).then(
+            fn=generate_environments,
+            inputs=[environment_prompt, campaign_id_state],
+            outputs=[environment_status, environment_gallery]
+        ).then(
+            fn=generate_product_views,
+            inputs=[product_dropdown, generation_mode, campaign_id_state],
+            outputs=[generation_status, generated_gallery]
+        ).then(
+            fn=lambda: gr.update(selected="preview"),
+            inputs=None,
+            outputs=[tabs]
         )
 
         # Update Generate tab preview when campaign settings change

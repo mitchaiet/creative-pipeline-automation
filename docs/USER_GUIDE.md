@@ -317,18 +317,60 @@ If you made changes in other tabs:
 1. Click **Refresh Preview**
 2. All counts and previews update
 
-### Load Campaign from JSON
+### Load Campaign from JSON (Automated Workflow)
 
-To load a previously saved campaign:
-1. Use the **Load Campaign JSON** file picker
-2. Select a `campaign_config.json` file
-3. The system will:
-   - Automatically populate all fields
-   - Switch to Preview tab
-   - Refresh all previews
+To load a previously saved campaign with automatic generation:
+
+1. Navigate to the **Campaign** tab
+2. Click **Load Campaign JSON** file picker
+3. Select a `campaign_config.json` file
+4. **Automatic workflow triggers:**
+   - Campaign configuration populates all UI fields
+   - Translations automatically generated for target region languages
+   - 4 environment backgrounds automatically created (30-60 seconds)
+   - Product views automatically generated (60-120 seconds per product)
+   - Preview tab opens with all generated assets
+
+**Expected Generation Time:**
+- Translations: 2-5 seconds
+- Environments: 30-60 seconds (4 images)
+- Products: 60-120 seconds (6 views per product)
+- **Total: 2-3 minutes for typical campaign**
 
 **JSON files are located at:**
 `outputs/{CAMPAIGN_ID}/campaign_config.json`
+
+**Campaign ID Format:**
+All campaigns use timestamp-based IDs (format: `YYYYMMDD_HHMMSS`) for chronological organization:
+- Example: `20251103_153045` = November 3, 2025 at 3:30:45 PM
+
+**JSON Structure Example:**
+```json
+{
+  "campaign": {
+    "id": "20251103_153045",
+    "created_at": "2025-11-03T15:30:45.123456"
+  },
+  "targeting": {
+    "region": "north_america",
+    "audience": "health_conscious"
+  },
+  "messaging": {
+    "primary_message": "Transform your wellness routine",
+    "translations": {
+      "en": "Transform your wellness routine",
+      "es": "Transforma tu rutina de bienestar",
+      "fr": "Transformez votre routine bien-être"
+    }
+  },
+  "generation_config": {
+    "environment_prompt": "Modern minimalist kitchen with marble countertops...",
+    "product_slugs": ["eco-cleaner"],
+    "product_mode": "separate",
+    "logo_paths": ["products/eco-cleaner/photos/logo/logo.png"]
+  }
+}
+```
 
 ### Next Steps
 
@@ -396,15 +438,30 @@ Generated ads appear in the gallery below, organized by:
 
 ### Output Structure
 
-All ads saved to your campaign folder:
+All campaigns are organized by timestamp in `outputs/`:
 
 ```
-outputs/{CAMPAIGN_ID}/
-  ads/
-    1_1/          # Square ads (Instagram feed)
-    9_16/         # Vertical ads (Stories, Reels)
-    16_9/         # Landscape ads (YouTube)
+outputs/YYYYMMDD_HHMMSS/
+├── campaign_config.json          # Complete campaign configuration
+├── environments/                 # 4 AI-generated background scenes
+│   ├── env_001.png
+│   ├── env_002.png
+│   ├── env_003.png
+│   └── env_004.png
+├── products/                     # 6 views per product
+│   ├── {product-slug}_front.png
+│   ├── {product-slug}_back.png
+│   ├── {product-slug}_left.png
+│   ├── {product-slug}_right.png
+│   ├── {product-slug}_top-down.png
+│   └── {product-slug}_bottom-up.png
+└── ads/                          # Final ad creatives
+    ├── 1_1/                      # Square ads (1080×1080 for Instagram, Facebook)
+    ├── 9_16/                     # Vertical ads (1080×1920 for Stories, Reels, TikTok)
+    └── 16_9/                     # Landscape ads (1920×1080 for YouTube)
 ```
+
+**Example Campaign ID:** `20251103_153045` = November 3, 2025 at 3:30:45 PM
 
 ### Next Steps
 

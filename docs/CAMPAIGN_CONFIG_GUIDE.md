@@ -78,7 +78,7 @@ This guide explains the available target regions/markets and target audiences fo
 
 ## Using Campaign Configuration
 
-### In the Gradio Interface
+### Method 1: Create New Campaign (Manual Configuration)
 
 1. Navigate to the **Campaign** tab
 2. View the **Interactive World Map**
@@ -100,6 +100,99 @@ This guide explains the available target regions/markets and target audiences fo
    - Full region information (name, description, cultural context, visual preferences)
    - Complete audience profile (name, age range, messaging preferences)
    - Formatted in easy-to-read markdown
+7. **Proceed to Messaging Tab** to enter campaign message and generate translations
+8. **Proceed to Environments Tab** to generate background scenes
+9. **Proceed to Products Tab** to generate product views
+10. **Preview Tab** to review all assets
+11. **Generate Tab** to create final ads
+
+### Method 2: Load from JSON (Automated Workflow)
+
+Load a previously saved campaign configuration for instant regeneration:
+
+1. Navigate to the **Campaign** tab
+2. Click **"Load Campaign JSON"** and select a `campaign_config.json` file
+3. **Automatic workflow triggers:**
+   - Campaign configuration populates all UI fields
+   - Translations automatically generated for target region languages
+   - 4 environment backgrounds automatically created
+   - Product views automatically generated (6 per product)
+   - Preview tab opens with all generated assets
+
+**Campaign Configuration Format:**
+
+All campaigns are organized by timestamp-based IDs (format: `YYYYMMDD_HHMMSS`) in `outputs/`:
+
+```
+outputs/20251103_153045/
+├── campaign_config.json          # Complete campaign configuration
+├── environments/                 # 4 AI-generated background scenes
+│   ├── env_001.png
+│   ├── env_002.png
+│   ├── env_003.png
+│   └── env_004.png
+├── products/                     # 6 views per product
+│   ├── eco-cleaner_front.png
+│   ├── eco-cleaner_back.png
+│   ├── eco-cleaner_left.png
+│   ├── eco-cleaner_right.png
+│   ├── eco-cleaner_top-down.png
+│   └── eco-cleaner_bottom-up.png
+└── ads/                          # Final ad creatives
+    ├── 1_1/                      # Square (1080×1080)
+    ├── 9_16/                     # Vertical (1080×1920)
+    └── 16_9/                     # Landscape (1920×1080)
+```
+
+**JSON Structure:**
+
+The `campaign_config.json` file contains all campaign settings and uses project-relative paths for portability:
+
+```json
+{
+  "campaign": {
+    "id": "20251103_153045",
+    "created_at": "2025-11-03T15:30:45.123456"
+  },
+  "targeting": {
+    "region": "north_america",
+    "audience": "health_conscious"
+  },
+  "messaging": {
+    "primary_message": "Transform your wellness routine",
+    "translations": {
+      "en": "Transform your wellness routine",
+      "es": "Transforma tu rutina de bienestar",
+      "fr": "Transformez votre routine bien-être"
+    }
+  },
+  "generation_config": {
+    "environment_prompt": "Modern minimalist kitchen...",
+    "product_slugs": ["eco-cleaner"],
+    "product_mode": "separate",
+    "logo_paths": ["products/eco-cleaner/photos/logo/logo.png"]
+  },
+  "ad_settings": {
+    "aspect_ratios": ["1:1", "9:16", "16:9"],
+    "localization": {
+      "1:1": true,
+      "9:16": true,
+      "16:9": false
+    },
+    "include_logo": {
+      "1:1": true,
+      "9:16": true,
+      "16:9": false
+    }
+  }
+}
+```
+
+**Expected Generation Times:**
+- **Translations:** 2-5 seconds (4 languages)
+- **Environments:** 30-60 seconds (4 images)
+- **Products:** 60-120 seconds (6 views per product)
+- **Total:** 2-3 minutes for typical campaign
 
 ### For Future Scene Generation (Step 2)
 

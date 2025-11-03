@@ -37,25 +37,30 @@ creative-automation-pipeline/
 │   ├── travel-backpack/
 │   └── yoga-mat/
 │
-├── outputs/                    # Generated campaign outputs
-│   ├── {CAMPAIGN_ID}/          # Self-contained campaign folder
+├── outputs/                    # Generated campaign outputs (timestamp-organized)
+│   ├── YYYYMMDD_HHMMSS/        # Campaign folder (e.g., 20251103_153045)
 │   │   ├── environments/       # Generated environment backgrounds
-│   │   │   └── environment_*_{timestamp}.png
+│   │   │   ├── env_001.png
+│   │   │   ├── env_002.png
+│   │   │   ├── env_003.png
+│   │   │   └── env_004.png
 │   │   ├── products/           # Generated product views
-│   │   │   ├── {product-slug}/ # Individual product views (Separate mode)
-│   │   │   │   └── {view}_{timestamp}.png
-│   │   │   └── combined/       # Combined product views (Combined mode)
-│   │   │       └── combined_{view}_{timestamp}.png
+│   │   │   ├── {product-slug}_front.png
+│   │   │   ├── {product-slug}_back.png
+│   │   │   ├── {product-slug}_left.png
+│   │   │   ├── {product-slug}_right.png
+│   │   │   ├── {product-slug}_top-down.png
+│   │   │   └── {product-slug}_bottom-up.png
 │   │   ├── ads/                # Final ad creatives
-│   │   │   ├── 1_1/            # Square ads (1080x1080)
-│   │   │   │   └── ad_1_1_{lang}_{timestamp}.png
-│   │   │   ├── 9_16/           # Vertical ads (1080x1920)
-│   │   │   │   └── ad_9_16_{lang}_{timestamp}.png
-│   │   │   └── 16_9/           # Landscape ads (1920x1080)
-│   │   │       └── ad_16_9_{lang}_{timestamp}.png
+│   │   │   ├── 1_1/            # Square ads (1080×1080)
+│   │   │   │   └── ad_{lang}.png
+│   │   │   ├── 9_16/           # Vertical ads (1080×1920)
+│   │   │   │   └── ad_{lang}.png
+│   │   │   └── 16_9/           # Landscape ads (1920×1080)
+│   │   │       └── ad_{lang}.png
 │   │   └── campaign_config.json # Complete campaign configuration
 │   │
-│   └── {ANOTHER_CAMPAIGN_ID}/  # Another campaign folder
+│   └── 20251103_140000/        # Another campaign (earlier timestamp)
 │
 ├── docs/                       # Documentation
 │   ├── FEATURES.md             # Complete feature overview
@@ -281,65 +286,55 @@ company:
 
 ### Campaign Folder Anatomy
 
-Each campaign generates a self-contained folder:
+Each campaign generates a self-contained folder with timestamp-based ID:
 
 ```
-outputs/{CAMPAIGN_ID}/
-├── campaign_config.json        # Complete campaign configuration
-├── environments/               # Generated backgrounds
-│   ├── environment_1_{timestamp}.png
-│   ├── environment_2_{timestamp}.png
-│   ├── environment_3_{timestamp}.png
-│   └── environment_4_{timestamp}.png
-├── products/
-│   ├── eco-cleaner/           # Separate mode outputs
-│   │   ├── front_{timestamp}.png
-│   │   ├── back_{timestamp}.png
-│   │   ├── left_{timestamp}.png
-│   │   ├── right_{timestamp}.png
-│   │   ├── top-down_{timestamp}.png
-│   │   └── bottom-up_{timestamp}.png
-│   └── combined/              # Combined mode outputs
-│       ├── combined_front_{timestamp}.png
-│       ├── combined_back_{timestamp}.png
-│       └── ...
-└── ads/
-    ├── 1_1/                   # Square ads
-    │   ├── ad_1_1_en_{timestamp}.png
-    │   ├── ad_1_1_es_{timestamp}.png
+outputs/YYYYMMDD_HHMMSS/         # Example: 20251103_153045
+├── campaign_config.json          # Complete campaign configuration
+├── environments/                 # Generated backgrounds (4 images)
+│   ├── env_001.png
+│   ├── env_002.png
+│   ├── env_003.png
+│   └── env_004.png
+├── products/                     # Generated product views (6 per product)
+│   ├── eco-cleaner_front.png
+│   ├── eco-cleaner_back.png
+│   ├── eco-cleaner_left.png
+│   ├── eco-cleaner_right.png
+│   ├── eco-cleaner_top-down.png
+│   └── eco-cleaner_bottom-up.png
+└── ads/                          # Final ad creatives
+    ├── 1_1/                      # Square ads (1080×1080)
+    │   ├── ad_en.png
+    │   ├── ad_es.png
+    │   ├── ad_fr.png
+    │   └── ad_zh-CN.png
+    ├── 9_16/                     # Vertical ads (1080×1920)
+    │   ├── ad_en.png
+    │   ├── ad_es.png
     │   └── ...
-    ├── 9_16/                  # Vertical ads
-    │   ├── ad_9_16_en_{timestamp}.png
-    │   └── ...
-    └── 16_9/                  # Landscape ads
-        ├── ad_16_9_en_{timestamp}.png
+    └── 16_9/                     # Landscape ads (1920×1080)
+        ├── ad_en.png
         └── ...
 ```
+
+**Campaign ID Format:** `YYYYMMDD_HHMMSS` (timestamp-based for chronological organization)
+- Example: `20251103_153045` = November 3, 2025 at 3:30:45 PM
 
 ### campaign_config.json Structure
 
 ```json
 {
   "campaign": {
-    "name": "Campaign E2E6K6",
-    "id": "E2E6K6",
-    "created_at": "2025-11-02T13:45:00",
-    "source": "manual",
-    "type": "manual_generation"
+    "id": "20251103_153045",
+    "created_at": "2025-11-03T15:30:45.123456"
   },
   "targeting": {
-    "region": {
-      "key": "north_america",
-      "name": "North America",
-      "countries": ["USA", "Canada", "Mexico"]
-    },
-    "audience": {
-      "key": "health_conscious_millennials",
-      "name": "Health-Conscious Millennials"
-    }
+    "region": "north_america",
+    "audience": "health_conscious"
   },
   "messaging": {
-    "primary": "Transform your wellness routine with natural ingredients",
+    "primary_message": "Transform your wellness routine with natural ingredients",
     "translations": {
       "en": "Transform your wellness routine...",
       "es": "Transforma tu rutina de bienestar...",
@@ -347,24 +342,29 @@ outputs/{CAMPAIGN_ID}/
       "zh-CN": "用天然成分改变您的健康习惯..."
     }
   },
-  "assets": {
-    "environments": [
-      "outputs/E2E6K6/environments/environment_1_20251102_134500.png"
-    ],
-    "products": [
-      "products/eco-cleaner/photos/product/bottle-front.jpg"
-    ],
-    "logos": [
-      "products/eco-cleaner/photos/logo/greenclean-logo.png"
-    ]
+  "generation_config": {
+    "environment_prompt": "Modern minimalist kitchen with marble countertops and natural sunlight...",
+    "product_slugs": ["eco-cleaner"],
+    "product_mode": "separate",
+    "logo_paths": ["products/eco-cleaner/photos/logo/greenclean-logo.png"]
   },
-  "generation_settings": {
-    "aspect_ratios": ["1_1", "9_16", "16_9"],
-    "localization_enabled": true,
-    "logo_inclusion": true
+  "ad_settings": {
+    "aspect_ratios": ["1:1", "9:16", "16:9"],
+    "localization": {
+      "1:1": true,
+      "9:16": true,
+      "16:9": false
+    },
+    "include_logo": {
+      "1:1": true,
+      "9:16": true,
+      "16:9": false
+    }
   }
 }
 ```
+
+**Note:** Paths in `campaign_config.json` are project-relative for portability across machines.
 
 ---
 

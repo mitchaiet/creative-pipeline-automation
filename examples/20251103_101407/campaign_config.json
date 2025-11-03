@@ -1,0 +1,58 @@
+{
+  "campaign": {
+    "name": "Campaign 20251103_101407",
+    "id": "20251103_101407",
+    "created_at": "2025-11-03T10:21:34.711365",
+    "source": "manual",
+    "type": "manual_generation"
+  },
+  "targeting": {
+    "region": "asia_pacific",
+    "audience": "fitness_enthusiasts"
+  },
+  "generation_config": {
+    "environment_prompt": "A serene tropical outdoor setting featuring a soft sandy beach with subtle ripples in the sand, surrounded by lush green palm trees, tropical foliage, and light coastal grass. The scene is sun-drenched with warm, natural golden sunlight and a slight ocean breeze, creating gentle motion in the leaves. In the distance, hints of turquoise ocean water glisten under a clear blue sky with a few wispy clouds. The environment feels fresh, organic, and premium — ideal for showcasing a high-end lifestyle or technology product. The overall composition should be balanced and minimal, with a soft-focus background and natural bokeh effect that keeps attention centered on the product in the foreground.",
+    "product_slugs": [
+      "travel-backpack",
+      "running-shoes"
+    ],
+    "product_mode": "combined",
+    "logo_paths": [
+      "products/running-shoes/photos/logo/puma-logo.png"
+    ]
+  },
+  "messaging": {
+    "primary_message": "Great backpacks and shoes make great travels.",
+    "localizations_enabled": {
+      "1:1": true,
+      "9:16": true,
+      "16:9": true
+    },
+    "translations": {
+      "zh-CN": "优质的背包和鞋子让旅行变得美好。",
+      "ja": "素晴らしいバックパックと靴は素晴らしい旅行をもたらします。",
+      "ko": "좋은 배낭과 신발은 좋은 여행을 만듭니다.",
+      "en": "Great backpacks and shoes make great travels."
+    }
+  },
+  "ad_settings": {
+    "aspect_ratios": [
+      "1:1",
+      "9:16",
+      "16:9"
+    ],
+    "localization": {
+      "enabled": true,
+      "per_format": {
+        "1:1": true,
+        "9:16": true,
+        "16:9": true
+      }
+    },
+    "include_logo": {
+      "1:1": true,
+      "9:16": true,
+      "16:9": true
+    }
+  }
+}

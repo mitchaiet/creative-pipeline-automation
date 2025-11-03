@@ -1,5 +1,8 @@
 # Campaign Monitoring Agent - Model Context Protocol
 
+Note: This is a non-functional design document synthesized from the functionality of the codebase and represents the various information that will be needed to draft LLM alerts and responses based on the social/advertising creative workflow.
+
+
 ## Purpose
 
 This document defines the information structure that an AI agent needs to monitor creative campaigns, track asset generation, and identify issues requiring human attention.

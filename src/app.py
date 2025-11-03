@@ -16,6 +16,8 @@ from io import BytesIO
 import plotly.graph_objects as go
 import plotly.express as px
 from deep_translator import GoogleTranslator
+import random
+import string
 
 # Load environment variables
 load_dotenv()
@@ -44,6 +46,13 @@ REGION_COUNTRIES = {
     "middle_east_africa": ["SAU", "ARE", "QAT", "KWT", "OMN", "BHR", "EGY", "MAR", "DZA", "TUN", "LBY", "ZAF", "NGA", "KEN", "ETH", "GHA", "TZA", "UGA", "ISR", "JOR", "LBN", "IRQ", "IRN"],
     "oceania": ["AUS", "NZL", "FJI", "PNG", "NCL", "PYF", "GUM", "SLB"]
 }
+
+
+def generate_campaign_id() -> str:
+    """Generate a unique 6-digit alphanumeric campaign ID."""
+    # Use uppercase letters and digits, excluding similar-looking characters (0, O, I, 1)
+    chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
+    return ''.join(random.choices(chars, k=6))
 
 
 def load_regions_config() -> dict:
@@ -148,13 +157,7 @@ def create_world_map(selected_region: Optional[str] = None):
 
     fig.update_layout(
         height=500,
-        margin=dict(l=0, r=0, t=30, b=0),
-        title=dict(
-            text="Select Target Region on Map",
-            font=dict(size=16, color='#333'),
-            x=0.5,
-            xanchor='center'
-        ),
+        margin=dict(l=0, r=0, t=0, b=0),
         paper_bgcolor='#FAFAFA',
         geo=dict(
             bgcolor='#FAFAFA'
@@ -284,7 +287,7 @@ def load_product_config(product_slug: str) -> Optional[dict]:
         return yaml.safe_load(f)
 
 
-def generate_product_views(product_slugs, generation_mode: str, progress=gr.Progress()) -> Tuple[str, List[str]]:
+def generate_product_views(product_slugs, generation_mode: str, campaign_id: str, progress=gr.Progress()) -> Tuple[str, List[str]]:
     """Generate all product views using Gemini 2.5 Flash Image with existing product photos as reference."""
 
     # Handle both single string and list
@@ -300,7 +303,9 @@ def generate_product_views(product_slugs, generation_mode: str, progress=gr.Prog
     if not api_key or api_key == "your_api_key_here":
         return "❌ Error: Please configure your API key in Settings tab first", []
 
-    # Timestamp for this generation batch
+    # Create campaign directory structure (use campaign_id only, no timestamp)
+    campaign_dir = Path("outputs") / campaign_id
+
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     generated_images = []
 
@@ -339,8 +344,8 @@ def generate_product_views(product_slugs, generation_mode: str, progress=gr.Prog
                 if not reference_images:
                     continue
 
-                # Create generated directory
-                generated_dir = PRODUCTS_DIR / product_slug / "photos" / "generated"
+                # Create product directory in campaign folder
+                generated_dir = campaign_dir / "products" / product_slug
                 generated_dir.mkdir(parents=True, exist_ok=True)
 
                 # Generate each view
@@ -390,7 +395,7 @@ Output only the product photograph from the specified angle. Do not include any 
                         image.save(filepath, "PNG")
                         generated_images.append(str(filepath))
 
-            return f"✅ Successfully generated {len(generated_images)} separate product views for {len(product_slugs)} product(s)!", generated_images
+            return f"✅ Successfully generated {len(generated_images)} separate product views for {len(product_slugs)} product(s)!\n\n**Campaign Folder:** `{campaign_dir}/`\n\nProducts saved to: `{campaign_dir / 'products'}/`", generated_images
 
         else:  # combined mode
             # Load all product configs and images
@@ -419,8 +424,8 @@ Output only the product photograph from the specified angle. Do not include any 
             if not all_reference_images:
                 return "❌ Error: Could not load any product photos", []
 
-            # Create output directory for combined images
-            combined_dir = PRODUCTS_DIR.parent / "outputs" / f"combined_{timestamp}"
+            # Create output directory for combined images in campaign folder
+            combined_dir = campaign_dir / "products" / "combined"
             combined_dir.mkdir(parents=True, exist_ok=True)
 
             # Generate combined views
@@ -474,7 +479,7 @@ Output only the product photograph from the specified angle showing all products
                     image.save(filepath, "PNG")
                     generated_images.append(str(filepath))
 
-            return f"✅ Successfully generated {len(generated_images)} combined product views showing {len(product_slugs)} product(s) together!", generated_images
+            return f"✅ Successfully generated {len(generated_images)} combined product views showing {len(product_slugs)} product(s) together!\n\n**Campaign Folder:** `{campaign_dir}/`\n\nProducts saved to: `{combined_dir}/`", generated_images
 
     except Exception as e:
         return f"❌ Error during generation: {str(e)}", generated_images
@@ -652,7 +657,7 @@ def generate_random_environment() -> str:
     return random.choice(environments)
 
 
-def generate_environments(prompt: str, progress=gr.Progress()) -> Tuple[str, List[str]]:
+def generate_environments(prompt: str, campaign_id: str, progress=gr.Progress()) -> Tuple[str, List[str]]:
     """Generate 4 background environment images using Gemini."""
     if not prompt or not prompt.strip():
         return "⚠️ Please enter an environment prompt first", []
@@ -662,11 +667,13 @@ def generate_environments(prompt: str, progress=gr.Progress()) -> Tuple[str, Lis
     if not api_key or api_key == "your_api_key_here":
         return "❌ Error: Please configure your API key in Settings tab first", []
 
-    # Create outputs directory
-    outputs_dir = Path("outputs/environments")
+    # Create campaign directory structure (use campaign_id only, no timestamp)
+    campaign_dir = Path("outputs") / campaign_id
+    outputs_dir = campaign_dir / "environments"
     outputs_dir.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
     generated_images = []
 
     try:
@@ -715,13 +722,13 @@ Variation {i + 1}: Add subtle variation in camera angle or lighting while mainta
                 image.save(filepath, "PNG")
                 generated_images.append(str(filepath))
 
-        return f"✅ Successfully generated {len(generated_images)} environment backgrounds!", generated_images
+        return f"✅ Successfully generated {len(generated_images)} environment backgrounds!\n\n**Campaign Folder:** `{campaign_dir}/`\n\nEnvironments saved to: `{outputs_dir}/`", generated_images
 
     except Exception as e:
         return f"❌ Error during generation: {str(e)}", generated_images
 
 
-def generate_ad_compositions(selected_envs: List[str], selected_products: List[str], campaign_msg: str, selected_logos: List[str], include_logo_1_1: bool, include_logo_9_16: bool, include_logo_16_9: bool, region_key: str, localize_1_1: bool, localize_9_16: bool, localize_16_9: bool, progress=gr.Progress()) -> Tuple[str, List[str], List[str], List[str]]:
+def generate_ad_compositions(selected_envs: List[str], selected_products: List[str], campaign_msg: str, selected_logos: List[str], include_logo_1_1: bool, include_logo_9_16: bool, include_logo_16_9: bool, region_key: str, audience_key: str, localize_1_1: bool, localize_9_16: bool, localize_16_9: bool, campaign_id: str, progress=gr.Progress()) -> Tuple[str, List[str], List[str], List[str], str]:
     """Generate final ad compositions in multiple aspect ratios using AI.
 
     If localization is enabled for a format, generates versions in all regional languages.
@@ -729,22 +736,31 @@ def generate_ad_compositions(selected_envs: List[str], selected_products: List[s
     """
 
     if not selected_envs:
-        return "⚠️ Please select at least one environment in the Environments tab", [], [], []
+        return "⚠️ Please select at least one environment in the Environments tab", [], [], [], ""
 
     if not selected_products:
-        return "⚠️ Please select at least one product view in the Products tab", [], [], []
+        return "⚠️ Please select at least one product view in the Products tab", [], [], [], ""
 
     # Check API key
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key or api_key == "your_api_key_here":
-        return "❌ Error: Please configure your API key in Settings tab first", [], [], []
+        return "❌ Error: Please configure your API key in Settings tab first", [], [], [], ""
 
     try:
-        # Create outputs directory
-        outputs_dir = Path("outputs/ads")
-        outputs_dir.mkdir(parents=True, exist_ok=True)
+        # Use provided campaign ID for folder naming (no timestamp)
+        campaign_dir = Path("outputs") / campaign_id
+        campaign_dir.mkdir(parents=True, exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # Create subdirectories for organized content
+        environments_dir = campaign_dir / "environments"
+        products_dir = campaign_dir / "products"
+        ads_dir = campaign_dir / "ads"
+
+        environments_dir.mkdir(parents=True, exist_ok=True)
+        products_dir.mkdir(parents=True, exist_ok=True)
+        # Note: ads subdirectories will be created when images are saved
 
         # Load first environment and product (using first selected)
         env_path = selected_envs[0]
@@ -755,6 +771,16 @@ def generate_ad_compositions(selected_envs: List[str], selected_products: List[s
         # Load reference images
         env_img = Image.open(env_path)
         product_img = Image.open(product_path)
+
+        # Copy ALL selected environment and product images to campaign folder
+        import shutil
+        for env in selected_envs:
+            env_dest = environments_dir / Path(env).name
+            shutil.copy2(env, env_dest)
+
+        for prod in selected_products:
+            product_dest = products_dir / Path(prod).name
+            shutil.copy2(prod, product_dest)
 
         # Load logo if available
         logo_img = None
@@ -793,16 +819,75 @@ def generate_ad_compositions(selected_envs: List[str], selected_products: List[s
             }
         }
 
-        # Get translations if any format needs localization
+        # Build comprehensive campaign configuration
+        campaign_config = {
+            "campaign": {
+                "name": f"Campaign {campaign_id}",
+                "id": campaign_id,
+                "created_at": datetime.now().isoformat(),
+                "source": "manual",
+                "type": "manual_generation"
+            },
+            "targeting": {
+                "region": region_key if region_key else None,
+                "audience": audience_key if audience_key else None
+            },
+            "region": region_key if region_key else None,  # Keep for backwards compatibility
+            "messaging": {
+                "primary_message": campaign_msg,
+                "localizations_enabled": {
+                    "1:1": localize_1_1,
+                    "9:16": localize_9_16,
+                    "16:9": localize_16_9
+                }
+            },
+            "assets": {
+                "environments": selected_envs,
+                "products": selected_products,
+                "logos": selected_logos if selected_logos else []
+            },
+            "generation_settings": {
+                "aspect_ratios": {
+                    "1:1": {
+                        "enabled": True,
+                        "include_logo": include_logo_1_1,
+                        "localize": localize_1_1
+                    },
+                    "9:16": {
+                        "enabled": True,
+                        "include_logo": include_logo_9_16,
+                        "localize": localize_9_16
+                    },
+                    "16:9": {
+                        "enabled": True,
+                        "include_logo": include_logo_16_9,
+                        "localize": localize_16_9
+                    }
+                }
+            }
+        }
+
+        # Always fetch translations for documentation (if region is selected)
         translations = []
+        if region_key and campaign_msg:
+            progress(0.05, desc="Getting translations...")
+            translations = get_message_translations(campaign_msg, region_key)
+
+        # Add translations to campaign config (always include for documentation)
+        if translations:
+            campaign_config["messaging"]["translations"] = translations
+
+        # Save campaign configuration to JSON
+        config_file = campaign_dir / "campaign_config.json"
+        with open(config_file, 'w', encoding='utf-8') as f:
+            json.dump(campaign_config, f, indent=2, ensure_ascii=False)
+
+        # Check if localization is needed for actual generation
         if localize_1_1 or localize_9_16 or localize_16_9:
-            if region_key:
-                progress(0.05, desc="Getting translations...")
-                translations = get_message_translations(campaign_msg, region_key)
-                if not translations:
-                    return "⚠️ Could not get translations. Please select a region in Campaign tab or disable localization.", [], [], []
-            else:
-                return "⚠️ Please select a region in Campaign tab to use localization feature.", [], [], []
+            if not region_key:
+                return "⚠️ Please select a region in Campaign tab to use localization feature.", [], [], [], json.dumps(campaign_config, indent=2, ensure_ascii=False)
+            if not translations:
+                return "⚠️ Could not get translations. Please select a region in Campaign tab or disable localization.", [], [], [], json.dumps(campaign_config, indent=2, ensure_ascii=False)
 
         outputs = {
             "1_1": [],
@@ -932,17 +1017,31 @@ A polished, professional advertisement that:
                     )
                 )
 
-                # Extract generated image
-                image_parts = [
-                    part.inline_data.data
-                    for part in response.candidates[0].content.parts
-                    if part.inline_data
-                ]
+                # Extract generated image with error handling
+                image_parts = []
+                if response and response.candidates and len(response.candidates) > 0:
+                    candidate = response.candidates[0]
+                    if candidate.content and candidate.content.parts:
+                        image_parts = [
+                            part.inline_data.data
+                            for part in candidate.content.parts
+                            if part.inline_data
+                        ]
 
                 if image_parts:
                     generated_img = Image.open(BytesIO(image_parts[0]))
-                    lang_suffix = f"_{msg_data['code']}" if msg_data['code'] != 'original' else ""
-                    filepath = outputs_dir / f"ad_{name}{lang_suffix}_{timestamp}.png"
+
+                    # Save to organized structure: ads/[ratio]/[lang]/
+                    ratio_dir = ads_dir / name
+                    lang_code = msg_data['code'] if msg_data['code'] != 'original' else 'en'
+                    lang_dir = ratio_dir / lang_code
+                    lang_dir.mkdir(parents=True, exist_ok=True)
+
+                    # Create filename with timestamp
+                    file_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
+                    filename = f"ad_{lang_code}_{file_timestamp}.png"
+                    filepath = lang_dir / filename
+
                     generated_img.save(filepath, "PNG")
                     outputs[name].append(str(filepath))
 
@@ -950,20 +1049,137 @@ A polished, professional advertisement that:
 
         # Build status message
         total_images = sum(len(imgs) for imgs in outputs.values())
-        status_parts = [f"✅ Successfully generated {total_images} AI-powered ad image(s)!"]
+        status_parts = [
+            f"✅ Successfully generated {total_images} AI-powered ad image(s)!",
+            f"\n**Campaign ID:** `{campaign_id}`",
+            ""
+        ]
 
         for format_name, images in outputs.items():
             if images:
                 localized = len(images) > 1
                 status_parts.append(f"- {format_name.replace('_', ':')}: {len(images)} image(s)" + (" (localized)" if localized else ""))
 
-        status_parts.append(f"\nSaved to: `{outputs_dir}/`")
+        status_parts.append(f"\n**Saved to:** `{campaign_dir}/`")
+        status_parts.append(f"\n📁 Organized by aspect ratio and language")
+        status_parts.append(f"📄 Complete JSON configuration saved")
         status = "\n".join(status_parts)
 
-        return status, outputs.get("1_1", []), outputs.get("9_16", []), outputs.get("16_9", [])
+        # Format JSON for display
+        json_str = json.dumps(campaign_config, indent=2, ensure_ascii=False)
+
+        return status, outputs.get("1_1", []), outputs.get("9_16", []), outputs.get("16_9", []), json_str
 
     except Exception as e:
-        return f"❌ Error generating ads: {str(e)}", [], [], []
+        return f"❌ Error generating ads: {str(e)}", [], [], [], ""
+
+
+# ============================================================================
+# Campaign Preview Functions
+# ============================================================================
+
+def build_generate_preview(region_key: str, audience_key: str, message: str) -> str:
+    """Build a dynamic campaign preview for the Generate tab.
+
+    Args:
+        region_key: Selected region key
+        audience_key: Selected audience key
+        message: Campaign message
+
+    Returns:
+        Formatted markdown string with campaign details
+    """
+    if not region_key or not audience_key or not message:
+        return """
+### Campaign Preview
+
+*Configure your campaign in the Campaign and Messaging tabs to see a preview here.*
+
+**Required:**
+- Target region (Campaign tab)
+- Target audience (Campaign tab)
+- Campaign message (Messaging tab)
+        """
+
+    # Load region and audience data
+    regions = load_regions_config()
+    audiences = load_audiences_config()
+
+    region_data = regions.get(region_key, {})
+    audience_data = audiences.get(audience_key, {})
+
+    region_name = region_data.get('name', 'Unknown')
+    audience_name = audience_data.get('name', 'Unknown')
+
+    # Get top languages
+    top_languages = region_data.get('top_languages', [])
+    lang_list = ", ".join([lang.get('name', '') for lang in top_languages[:4]])
+
+    # Build preview
+    preview = f"""
+### Campaign Configuration
+
+**🌍 Target Region:** {region_name}
+**👥 Target Audience:** {audience_name}
+**💬 Campaign Message:** "{message}"
+
+**🌐 Localization:** {len(top_languages[:4])} languages ({lang_list})
+
+---
+
+*Ready to generate professional ad creatives in 3 aspect ratios*
+    """
+
+    return preview.strip()
+
+
+# ============================================================================
+# Campaign JSON Functions
+# ============================================================================
+
+def load_campaign_from_json(json_path: str) -> tuple:
+    """Load campaign configuration from JSON file and extract settings.
+
+    Returns:
+        Tuple of (region_key, audience_key, message, status_message, environments, products)
+    """
+    if not json_path:
+        return None, None, "", "No file selected", [], []
+
+    try:
+        with open(json_path, 'r') as f:
+            config = json.load(f)
+
+        # Extract region and audience from targeting (new format) or fallback to region (old format)
+        targeting = config.get("targeting", {})
+        region_key = targeting.get("region") if targeting else config.get("region", None)
+        audience_key = targeting.get("audience", None)
+
+        # Extract message
+        messaging = config.get("messaging", {})
+        message = messaging.get("primary_message", "")
+
+        # Extract asset paths
+        assets = config.get("assets", {})
+        environments = assets.get("environments", [])
+        products = assets.get("products", [])
+
+        # Get campaign info for status message
+        campaign_info = config.get("campaign", {})
+        campaign_name = campaign_info.get("name", "Campaign")
+        campaign_id = campaign_info.get("id", "Unknown")
+
+        status = f"✅ Loaded campaign: **{campaign_name}** (ID: `{campaign_id}`)\n\n"
+        status += f"- Region: {region_key or 'Not specified'}\n"
+        status += f"- Audience: {audience_key or 'Not specified'}\n"
+        status += f"- Message: {len(message)} characters\n"
+        status += f"- Environments: {len(environments)} asset(s)\n"
+        status += f"- Products: {len(products)} asset(s)\n"
+
+        return region_key, audience_key, message, status, environments, products
+
+    except Exception as e:
+        return None, None, "", f"❌ Error loading JSON: {str(e)}", [], []
 
 
 def export_campaign_config(region_key: str, audience_key: str, message: str, selected_envs: List[str], selected_products: List[str]) -> str:
@@ -1039,29 +1255,42 @@ def create_interface():
         with gr.Tabs() as tabs:
             # Campaign Configuration Tab
             with gr.Tab("🎯 Campaign", id="campaign"):
-                gr.Markdown("## Campaign Configuration")
-                gr.Markdown("Configure your campaign target region/market and audience for creative generation.")
+                # Top row with Load JSON and Campaign ID
+                with gr.Row():
+                    with gr.Column(scale=2):
+                        gr.Markdown("## Campaign Configuration")
+                        gr.Markdown("Configure your campaign target region/market and audience for creative generation.")
+                    with gr.Column(scale=1):
+                        load_json_file = gr.File(
+                            label="📂 Load Campaign JSON",
+                            file_types=[".json"],
+                            type="filepath",
+                            file_count="single"
+                        )
+                    with gr.Column(scale=1):
+                        campaign_id_display = gr.Markdown(
+                            value=f"### Campaign ID: `{generate_campaign_id()}`",
+                            elem_classes=["campaign-id-display"]
+                        )
+                        regenerate_id_btn = gr.Button("🔄 New ID", variant="secondary", size="sm")
 
-                # World Map
-                gr.Markdown("### Interactive World Map")
-                gr.Markdown("Use the region buttons or dropdown below to select your target market.")
+                load_status = gr.Markdown("")
 
-                world_map = gr.Plot(
-                    value=create_world_map(),
-                    show_label=False
+                # Store campaign ID in state
+                campaign_id_state = gr.State(value=generate_campaign_id())
+
+                # Handler to regenerate campaign ID
+                def regenerate_campaign_id():
+                    new_id = generate_campaign_id()
+                    return new_id, f"### Campaign ID: `{new_id}`"
+
+                regenerate_id_btn.click(
+                    fn=regenerate_campaign_id,
+                    outputs=[campaign_id_state, campaign_id_display]
                 )
 
-                # Region selection buttons for easier clicking
-                gr.Markdown("**Quick Select Regions:**")
-                with gr.Row():
-                    btn_north_america = gr.Button("🌎 North America", size="sm")
-                    btn_europe = gr.Button("🇪🇺 Europe", size="sm")
-                    btn_asia_pacific = gr.Button("🌏 Asia Pacific", size="sm")
-
-                with gr.Row():
-                    btn_latin_america = gr.Button("🌎 Latin America", size="sm")
-                    btn_middle_east_africa = gr.Button("🌍 Middle East & Africa", size="sm")
-                    btn_oceania = gr.Button("🏝️ Oceania", size="sm")
+                # Load JSON handler (will be wired up after all components are defined)
+                # Placeholder for now
 
                 with gr.Row():
                     with gr.Column():
@@ -1083,6 +1312,14 @@ def create_interface():
                             interactive=True
                         )
                         audience_info = gr.Markdown("")
+
+                # World Map
+                gr.Markdown("### Interactive World Map")
+
+                world_map = gr.Plot(
+                    value=create_world_map(),
+                    show_label=False
+                )
 
                 # Function to display region details
                 def display_region_info(region_key):
@@ -1240,35 +1477,9 @@ def create_interface():
                     map_fig = create_world_map(region_key)
                     return region_key, map_fig, info
 
-                btn_north_america.click(
-                    fn=lambda: select_region("north_america"),
-                    outputs=[region_dropdown, world_map, region_info]
-                )
-
-                btn_europe.click(
-                    fn=lambda: select_region("europe"),
-                    outputs=[region_dropdown, world_map, region_info]
-                )
-
-                btn_asia_pacific.click(
-                    fn=lambda: select_region("asia_pacific"),
-                    outputs=[region_dropdown, world_map, region_info]
-                )
-
-                btn_latin_america.click(
-                    fn=lambda: select_region("latin_america"),
-                    outputs=[region_dropdown, world_map, region_info]
-                )
-
-                btn_middle_east_africa.click(
-                    fn=lambda: select_region("middle_east_africa"),
-                    outputs=[region_dropdown, world_map, region_info]
-                )
-
-                btn_oceania.click(
-                    fn=lambda: select_region("oceania"),
-                    outputs=[region_dropdown, world_map, region_info]
-                )
+                # Note: Plotly map clicks are not directly supported in Gradio Plot components
+                # Users should use the dropdown to select regions
+                # The map updates automatically to highlight the selected region
 
                 # Navigation
                 gr.Markdown("---")
@@ -1306,15 +1517,6 @@ def create_interface():
                     translate_btn = gr.Button("🌐 Translate Message", variant="primary", size="lg")
 
                 translations_output = gr.Markdown("Translations will appear here...")
-
-                gr.Markdown("---")
-                gr.Markdown("### Tips for Effective Messaging")
-                gr.Markdown("""
-- **Align with audience preferences**: Reference the campaign configuration for tone and style
-- **Keep it concise**: Focus on key benefits and emotional triggers
-- **Include a call-to-action**: What should the audience do next?
-- **Test variations**: Try different messages for different platforms or segments
-                """)
 
                 # Character counter
                 def count_characters(text):
@@ -1396,20 +1598,10 @@ def create_interface():
                     selected_env_display = gr.Markdown("**Selected:** None")
                     clear_env_selection_btn = gr.Button("Clear Selection", size="sm", variant="secondary")
 
-                gr.Markdown("---")
-                gr.Markdown("### Tips for Environment Generation")
-                gr.Markdown("""
-- **Be specific**: Include lighting, style, and key features (e.g., "modern kitchen with natural light")
-- **Consider product context**: Think about where your product would naturally appear
-- **Use the randomize button** for inspiration and variety
-- **4 variations generated**: Each generation creates 4 similar environments with subtle differences
-- **1:1 aspect ratio**: Perfect for social media and product composites
-                """)
-
                 # Generate environments handler
                 generate_env_btn.click(
                     fn=generate_environments,
-                    inputs=[environment_prompt],
+                    inputs=[environment_prompt, campaign_id_state],
                     outputs=[environment_status, environment_gallery]
                 )
 
@@ -1543,7 +1735,7 @@ def create_interface():
                 # Generate button handler
                 generate_btn.click(
                     fn=generate_product_views,
-                    inputs=[product_dropdown, generation_mode],
+                    inputs=[product_dropdown, generation_mode, campaign_id_state],
                     outputs=[generation_status, generated_gallery]
                 )
 
@@ -1822,34 +2014,6 @@ def create_interface():
                     outputs=[preview_campaign_summary, preview_message, preview_translations, preview_env_gallery, preview_env_count, preview_product_gallery, preview_product_count, preview_logo_gallery, preview_logo_count]
                 )
 
-                gr.Markdown("---")
-
-                # Export Configuration Section
-                gr.Markdown("## 💾 Export Campaign Configuration")
-                gr.Markdown("Save your complete campaign configuration to a JSON file for later use or sharing.")
-
-                with gr.Row():
-                    export_btn = gr.Button("📥 Save Campaign JSON", variant="primary", size="lg")
-
-                export_status = gr.Markdown("")
-
-                # Export function wrapper
-                def export_and_notify(region_key, audience_key, message, selected_envs, selected_products):
-                    """Export campaign and show status."""
-                    filepath = export_campaign_config(region_key, audience_key, message, selected_envs, selected_products)
-
-                    if filepath.startswith("Error"):
-                        return f"❌ {filepath}"
-                    else:
-                        return f"✅ **Campaign configuration saved!**\n\nFile: `{filepath}`\n\nThis JSON file contains all your campaign settings and selected asset paths."
-
-                # Connect export button
-                export_btn.click(
-                    fn=export_and_notify,
-                    inputs=[region_dropdown, audience_dropdown, campaign_message, selected_env_state, selected_product_state],
-                    outputs=[export_status]
-                )
-
                 # Navigation
                 gr.Markdown("---")
                 with gr.Row():
@@ -1859,8 +2023,9 @@ def create_interface():
             # Generate Tab
             with gr.Tab("🎨 Generate", id="generate"):
                 gr.Markdown("# Generate Campaign Ads")
-                gr.Markdown("AI-powered ad generation: Nano Banana synthesizes your selected environments, product shots, and messaging into professional ad creatives.")
-                gr.Markdown("*Messaging from the Messaging tab will be used automatically. Optionally customize copy for specific formats below.*")
+
+                # Dynamic campaign preview
+                generate_campaign_preview = gr.Markdown("Loading campaign details...")
 
                 with gr.Row():
                     generate_ads_btn = gr.Button("🚀 Generate All Ad Formats", variant="primary", size="lg")
@@ -1956,31 +2121,22 @@ def create_interface():
                         )
 
                 gr.Markdown("---")
+                gr.Markdown("### 📄 Campaign Configuration JSON")
+                gr.Markdown("Complete campaign configuration with all settings and translations:")
 
-                # Generation Tips
-                gr.Markdown("### 💡 AI Generation Process")
-                gr.Markdown("""
-**How it works:**
-- **AI Synthesis**: Nano Banana (Gemini 2.5 Flash Image) intelligently composites your assets
-- **Natural Integration**: Product is seamlessly placed into the environment with proper lighting and shadows
-- **Professional Typography**: Campaign messaging is overlaid with modern, readable fonts
-- **Aspect Ratio Optimization**: Each format is designed specifically for its platform
-
-**Requirements:**
-- Select at least one environment (Environments tab)
-- Select at least one product view (Products tab)
-- Campaign message from Messaging tab
-- Valid API key configured in Settings
-
-**Output:**
-Three professional ad creatives ready for deployment across social platforms
-                """)
+                campaign_json_display = gr.Code(
+                    label="Campaign Configuration",
+                    language="json",
+                    value="",
+                    interactive=False,
+                    lines=20
+                )
 
                 # Connect generation button
                 generate_ads_btn.click(
                     fn=generate_ad_compositions,
-                    inputs=[selected_env_state, selected_product_state, campaign_message, selected_logo_state, include_logo_1_1, include_logo_9_16, include_logo_16_9, region_dropdown, generate_localizations_1_1, generate_localizations_9_16, generate_localizations_16_9],
-                    outputs=[generation_status_ads, preview_1_1, preview_9_16, preview_16_9]
+                    inputs=[selected_env_state, selected_product_state, campaign_message, selected_logo_state, include_logo_1_1, include_logo_9_16, include_logo_16_9, region_dropdown, audience_dropdown, generate_localizations_1_1, generate_localizations_9_16, generate_localizations_16_9, campaign_id_state],
+                    outputs=[generation_status_ads, preview_1_1, preview_9_16, preview_16_9, campaign_json_display]
                 )
 
                 # Navigation
@@ -2048,11 +2204,92 @@ Three professional ad creatives ready for deployment across social platforms
         next_to_settings.click(fn=lambda: gr.update(selected="settings"), inputs=None, outputs=tabs)
         prev_to_generate.click(fn=lambda: gr.update(selected="generate"), inputs=None, outputs=tabs)
 
+        # Wire up Load JSON handler with auto-preview
+        def load_and_preview(json_path):
+            """Load campaign JSON, populate fields, and switch to preview tab."""
+            # Load the JSON
+            region_key, audience_key, message, status, environments, products = load_campaign_from_json(json_path)
+
+            # Call refresh_preview to get preview outputs
+            preview_outputs = refresh_preview(
+                region_key,
+                audience_key,
+                message,
+                "",  # translations (will be empty initially)
+                environments,
+                products,
+                []  # logos
+            )
+
+            # Build generate preview
+            generate_preview = build_generate_preview(region_key, audience_key, message)
+
+            # Return all outputs including tab switch
+            return (
+                region_key,           # region_dropdown
+                audience_key,         # audience_dropdown
+                message,              # campaign_message
+                status,               # load_status
+                environments,         # selected_env_state
+                products,             # selected_product_state
+                gr.update(selected="preview"),  # tabs (switch to preview)
+                generate_preview,     # generate_campaign_preview
+                *preview_outputs      # all preview outputs
+            )
+
+        load_json_file.change(
+            fn=load_and_preview,
+            inputs=[load_json_file],
+            outputs=[
+                region_dropdown,
+                audience_dropdown,
+                campaign_message,
+                load_status,
+                selected_env_state,
+                selected_product_state,
+                tabs,  # Switch to preview tab
+                generate_campaign_preview,  # Update generate tab preview
+                preview_campaign_summary,
+                preview_message,
+                preview_translations,
+                preview_env_gallery,
+                preview_env_count,
+                preview_product_gallery,
+                preview_product_count,
+                preview_logo_gallery,
+                preview_logo_count
+            ]
+        )
+
+        # Update Generate tab preview when campaign settings change
+        def update_generate_preview_wrapper(region_key, audience_key, message):
+            """Wrapper to update generate preview."""
+            return build_generate_preview(region_key, audience_key, message)
+
+        # Wire up updates to generate preview
+        region_dropdown.change(
+            fn=update_generate_preview_wrapper,
+            inputs=[region_dropdown, audience_dropdown, campaign_message],
+            outputs=[generate_campaign_preview]
+        )
+
+        audience_dropdown.change(
+            fn=update_generate_preview_wrapper,
+            inputs=[region_dropdown, audience_dropdown, campaign_message],
+            outputs=[generate_campaign_preview]
+        )
+
+        campaign_message.change(
+            fn=update_generate_preview_wrapper,
+            inputs=[region_dropdown, audience_dropdown, campaign_message],
+            outputs=[generate_campaign_preview]
+        )
+
     return app
 
 
 if __name__ == "__main__":
     app = create_interface()
-    # Use Railway's PORT environment variable if available, otherwise default to 7860
+    # Use PORT environment variable if available, otherwise default to 7860
     port = int(os.environ.get("PORT", 7860))
     app.launch(server_name="0.0.0.0", server_port=port)

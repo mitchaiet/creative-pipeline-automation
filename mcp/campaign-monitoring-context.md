@@ -4,8 +4,75 @@
 
 This document defines the information structure that an AI agent needs to monitor creative campaigns, track asset generation, and identify issues requiring human attention.
 
-## System Overview
+---
 
+## Core Monitoring Capabilities
+
+The AI monitoring agent is designed to perform the following key functions:
+
+### 1. Monitor Incoming Campaign Briefs
+- **What to check:** Campaign configuration completeness (region, audience, message)
+- **Data source:** `campaign_config.json` → `campaign`, `targeting`, `messaging` sections
+- **Validation:** Ensure all required fields are present and valid
+- **Alert on:** Missing region, missing audience, empty message, invalid campaign ID format
+
+### 2. Trigger Automated Generation Tasks
+- **What to monitor:** Workflow progression through all generation phases
+- **Phases to track:**
+  1. Translation generation (2-5 seconds)
+  2. Environment generation (30-60 seconds, 4 images)
+  3. Product generation (60-120 seconds per product, 6 views each)
+  4. Ad composition (30-60 seconds per aspect ratio)
+- **Alert on:** Phase timeout (>10 minutes total), stuck phases, generation errors
+
+### 3. Track Count and Diversity of Creative Variants
+- **Asset counts to monitor:**
+  - **Environments:** Minimum 1, recommended 3+ for variety
+  - **Products:** Expected 6 views per product (front, back, left, right, top-down, bottom-up)
+  - **Ads:** Calculate expected count based on aspect ratios × localizations
+    ```
+    Expected ads = Σ(aspect_ratios) × (languages if localization enabled, else 1)
+    Example: 3 ratios × 4 languages = 12 ad variants
+    ```
+- **Alert on:**
+  - Fewer than 3 environment variants (insufficient diversity)
+  - Fewer than 3 ad variants per aspect ratio (insufficient for A/B testing)
+  - Missing product views (incomplete generation)
+
+### 4. Flag Missing or Insufficient Assets
+- **Critical thresholds:**
+  - Environments: Alert if < 1, warn if < 3
+  - Products: Alert if any product has < 6 views
+  - Ads: Alert if total variants < expected count
+- **Quality checks:**
+  - File existence validation
+  - File size > 0 bytes (detect failed generations)
+  - Image dimensions match expected (1080×1080, 1080×1920, 1920×1080)
+
+### 5. Alert and Logging Mechanism
+- **Alert severity levels:**
+  - **❌ CRITICAL:** Blocks campaign launch (no assets, missing required data, generation failure)
+  - **⚠️ WARNING:** Doesn't block but needs review (low variant count, long generation time)
+  - **ℹ️ INFO:** Status updates (generation complete, assets refreshed)
+- **Human-readable alert format:**
+  ```
+  Campaign {campaign_id} for {region} {audience} audience:
+  Status: {generation_complete/failed/in_progress}
+
+  Assets Generated:
+  - Environments: {count} (recommended: 3+)
+  - Products: {count} views across {n} products
+  - Ads: {count} variants across {n} aspect ratios
+
+  Alerts:
+  - [CRITICAL/WARNING/INFO] {specific issue description}
+
+  Action Required: {specific recommendation}
+  ```
+
+---
+
+## System Overview
 The Creative Automation Pipeline uses an automated workflow that triggers sequential generation when a campaign JSON is loaded:
 
 1. **JSON Load** → Campaign configuration populates UI
